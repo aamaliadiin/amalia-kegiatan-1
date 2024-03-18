@@ -1,0 +1,318 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    public static Book[] bookList;
+    private static List<Student> userStudent;
+    private static Scanner scanner;
+    Admin admin = new Admin();
+
+    public static void main(String[] args) {
+        Main library = new Main();
+        library.menu();
+    }
+
+    public Main() {
+        scanner = new Scanner(System.in);
+        bookList = new Book[]{
+                new Book("1", "Matdis", "Mr X", "M", 3),
+                new Book("2", "Fisika", "Mrs Y", "N", 7),
+                new Book("3", "Matematika", "Mrs Z", "0", 9),
+                new Book("4", "Orkom", "Mr O", "P", 1)
+        };
+
+
+        userStudent = new ArrayList();
+        userStudent.add(new Student("Amalia", "202310370311360", "Teknik", "Informatika"));
+        userStudent.add(new Student("Marcela", "202310370311789", "Teknik", "Informatika"));
+        userStudent.add(new Student("Keysya", "202310370312356", "Teknik", "Informatika"));
+    }
+
+    public void menu() {
+        int choice;
+        do {
+            System.out.println("Library System");
+            System.out.println("1. Masuk sebagai Mahasiswa");
+            System.out.println("2. Masuk sebagai Admin");
+            System.out.println("3. Keluar");
+            System.out.print("Masukkan pilihan: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    inputNim();
+                    break;
+                case 2:
+                    System.out.print("Masukkan id : ");
+                    String username = scanner.next();
+                    System.out.print("Masukkan password : ");
+                    String password = scanner.next();
+
+                    if (username.equals(Admin.username) && password.equals(Admin.password)) {
+                        System.out.println("Login berhasil.");
+                        menuAdmin();
+                    } else {
+                        System.out.println("Nama pengguna atau kata sandi salah.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("keluar");
+                    break;
+                default:
+                    System.out.println("Coba lagi");
+            }
+        } while (choice != 3);
+    }
+
+    public static void menuStudent(String nim) {
+        int choice = 0;
+
+        do {
+            System.out.println("Student Menu");
+            System.out.println("1. List buku");
+            System.out.println("2. List pinjaman");
+            System.out.println("3. Pinjam buku");
+            System.out.println("4. Logout");
+            System.out.print("Choose option: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    Student.displayBooks(bookList);
+                    break;
+                case 2:
+                    for (Student student : userStudent) {
+                        student.displayBorrowedBooks();
+                    }
+                    break;
+                case 3:
+                    for (Student student : userStudent) {
+                        student.borrowBook(bookList);
+                    }
+                    break;
+                case 4:
+                    System.out.println("keluar dari akun mahasiswa");
+                    break;
+                default:
+                    System.out.println("Bye");
+            }
+        } while (choice != 4);
+    }
+
+    public static void inputNim() {
+        System.out.println("Masukkan nim mu: ");
+        scanner.nextLine();
+        String nim = scanner.nextLine();
+        checkNim(nim, 1);
+    }
+
+    public static void checkNim(String nim, int i) {
+        boolean found = false;
+        for (Student student : userStudent) {
+            if (student.getNim().equals(nim)) {
+                found = true;
+                menuStudent(nim);
+                break;
+            }
+        }
+        if (!found) {
+            System.out.println("mahasiswa dengan NIM " + nim + " tidak ditemukan");
+        }
+    }
+
+    public void menuAdmin() {
+        Admin admin = new Admin();
+        Book Book = new Book();
+        int choice;
+        do {
+            System.out.println("Admin Menu");
+            System.out.println("1. Add Student");
+            System.out.println("2. Display Registered Students");
+            System.out.println("3. Logout");
+            System.out.print("Choose option: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    admin.addStudent();
+                    break;
+                case 2:
+                    admin.displayStudent();
+                    break;
+                case 3:
+                    System.out.println("loggout");
+                    break;
+                default:
+                    System.out.println("Coba lagi");
+            }
+        } while (choice != 3);
+    }
+}
+class Admin {
+    static String username = "admin";
+    static String password = "admin";
+    static List<Student> userStudent = new ArrayList();
+    static Scanner scanner = new Scanner(System.in);
+
+    public String username(){
+        return username;
+    }
+
+    public String password(){
+        return password;
+    }
+
+    public static void addStudent() {
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter NIM: ");
+        String nim = scanner.nextLine();
+        System.out.print("Enter faculty: ");
+        String faculty = scanner.nextLine();
+        System.out.print("Enter study program: ");
+        String studyProgram = scanner.nextLine();
+
+        Student newStudent = new Student(name, nim, faculty, studyProgram);
+        userStudent.add(newStudent);
+
+        System.out.println("Mahasiswa berhasil ditambahkan");
+    }
+
+    public static void displayStudent() {
+        System.out.println("Registered Students:");
+        for (Student student : userStudent) {
+            System.out.println(student.getName() + " (" + student.getNim() + ")");
+        }
+    }
+}
+class Book {
+    private String id;
+    private String judul;
+    private String penulis;
+    private String kategori;
+    private int stock;
+
+    public Book() {
+        this.id = id;
+        this.judul = judul;
+        this.penulis = penulis;
+        this.kategori = kategori;
+        this.stock = stock;
+    }
+
+    public Book(String id, String judul, String penulis, String kategori, int stock) {
+        this.id = id;
+        this.judul = judul;
+        this.penulis = penulis;
+        this.kategori = kategori;
+        this.stock = stock;
+    }
+
+    // Getters and setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return judul;
+    }
+
+    public void setTitle(String title) {
+        this.judul = title;
+    }
+
+    public String getAuthor() {
+        return penulis;
+    }
+
+    public void setAuthor(String penulis) {
+        this.penulis = penulis;
+    }
+
+    public String getCategory() {
+        return kategori;
+    }
+
+    public void setCategory(String category) {
+        this.kategori = category;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+}
+class Student {
+    private Scanner scanner;
+    private String name;
+    private String nim;
+    private String faculty;
+    private String studyProgram;
+    private List<Book> borrowedBooks;
+
+    public Student(String nama, String nim, String faculty, String studyProgram) {
+        this.name = nama;
+        this.nim = nim;
+        this.faculty = faculty;
+        this.studyProgram = studyProgram;
+        this.borrowedBooks = new ArrayList<>();
+        this.scanner = new Scanner(System.in);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getNim() {
+        return nim;
+    }
+
+
+    public static void displayBooks(Book[] books) {
+        System.out.println("Available Books:");
+        for (Book book : books) {
+            System.out.println(book.getTitle() + " (" + book.getAuthor() + ") - " + book.getStock() + " copies available");
+        }
+    }
+
+    public void displayBorrowedBooks() {
+        if (borrowedBooks.isEmpty()) {
+            System.out.println("Kamu belum ada buku ^_^");
+        } else {
+            System.out.println("Buku yang sudah diambil:");
+            for (Book book : borrowedBooks) {
+                System.out.println(book.getTitle() + " (" + book.getAuthor() + ")");
+            }
+        }
+    }
+
+    public void borrowBook(Book[] bookList) {
+        Scanner scanner = new Scanner(System.in); // Initialize scanner locally
+        System.out.println("Enter the ID of the book you want to borrow: ");
+        String bookId = scanner.nextLine();
+
+        for (Book book : bookList) {
+            if (book.getId().equals(bookId)) {
+                if (book.getStock() > 0) {
+                    borrowedBooks.add(book);
+                    book.setStock(book.getStock() - 1);
+                    System.out.println("Book borrowed successfully.");
+                } else {
+                    System.out.println("Sorry, the book is currently out of stock.");
+                }
+                return;
+            }
+        }
+
+        System.out.println("Book not found.");
+    }
+}
